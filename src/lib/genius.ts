@@ -118,7 +118,8 @@ export async function getAllSongs(artistId: number): Promise<Song[]> {
   let page: number | null = 1
 
   while (page !== null) {
-    const response = await client.get(`/artists/${artistId}/songs`, {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const response: { data: any } = await client.get(`/artists/${artistId}/songs`, {
       params: { per_page: 50, page, sort: 'release_date' },
     })
 
