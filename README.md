@@ -48,7 +48,15 @@ If you prefer not to use Docker, you also need [Node.js 20+](https://nodejs.org)
 
 1. Go to [genius.com/api-clients](https://genius.com/api-clients) and sign in (create a free account if you don't have one).
 2. Click **New API Client**.
-3. Fill in any name (e.g. `Verseatile`) and any URL (e.g. `http://localhost`).
+3. Fill in the form — all four fields are shown but only two matter:
+
+   | Field | What to enter |
+   |---|---|
+   | **APP NAME** | Anything you like, e.g. `Verseatile` |
+   | **ICON URL** | Leave blank |
+   | **APP WEBSITE URL** | `http://localhost` — must include `http://` or the form will reject it |
+   | **REDIRECT URI** | Leave blank |
+
 4. Click **Save**.
 5. On the next page, click **Generate Access Token**.
 6. Copy the long token string — you'll need it in the next step.
