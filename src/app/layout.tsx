@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
-import { Geist } from 'next/font/google'
+import { Inter } from 'next/font/google'
 import { Playfair_Display } from 'next/font/google'
 import './globals.css'
 
-const geistSans = Geist({
+const inter = Inter({
   variable: '--font-geist-sans',
   subsets: ['latin'],
 })
@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${playfairDisplay.variable} antialiased bg-background text-text-primary min-h-screen`}
+        className={`${inter.variable} ${playfairDisplay.variable} antialiased bg-background text-text-primary min-h-screen`}
       >
         {children}
       </body>
