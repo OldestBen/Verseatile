@@ -3,17 +3,15 @@ import { Geist } from 'next/font/google'
 import { Playfair_Display } from 'next/font/google'
 import './globals.css'
 
-const geist = Geist({
+const geistSans = Geist({
+  variable: '--font-geist-sans',
   subsets: ['latin'],
-  variable: '--font-geist',
-  display: 'swap',
 })
 
-const playfair = Playfair_Display({
-  subsets: ['latin'],
+const playfairDisplay = Playfair_Display({
   variable: '--font-playfair',
+  subsets: ['latin'],
   style: ['normal', 'italic'],
-  display: 'swap',
 })
 
 export const metadata: Metadata = {
@@ -23,12 +21,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode
-}) {
+}>) {
   return (
-    <html lang="en" className={`${geist.variable} ${playfair.variable}`}>
-      <body className="font-sans antialiased bg-background text-text-primary min-h-screen">
+    <html lang="en">
+      <body
+        className={`${geistSans.variable} ${playfairDisplay.variable} antialiased bg-background text-text-primary min-h-screen`}
+      >
         {children}
       </body>
     </html>

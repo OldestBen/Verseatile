@@ -1,46 +1,15 @@
 'use client'
 
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 
 interface Artist {
   id: number
   name: string
-  image_url: string | null
-  header_image_url: string | null
+  image_url: string
+  header_image_url: string
   url: string
-}
-
-function ArtistCard({ artist }: { artist: Artist }) {
-  return (
-    <Link
-      href={`/artist/${artist.id}`}
-      className="group flex items-center gap-4 p-4 rounded-xl border border-border bg-surface card-hover cursor-pointer"
-    >
-      <div className="relative w-14 h-14 rounded-full overflow-hidden flex-shrink-0 bg-border">
-        {artist.image_url ? (
-          <Image
-            src={artist.image_url}
-            alt={artist.name}
-            fill
-            className="object-cover"
-            sizes="56px"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-text-muted text-xl font-bold">
-            {artist.name.charAt(0).toUpperCase()}
-          </div>
-        )}
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="font-semibold text-text-primary truncate group-hover:text-accent transition-colors">
-          {artist.name}
-        </p>
-        <p className="text-sm text-text-muted mt-0.5">View discography →</p>
-      </div>
-    </Link>
-  )
 }
 
 export default function HomePage() {
@@ -49,144 +18,170 @@ export default function HomePage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [searched, setSearched] = useState(false)
-  const debounceRef = useRef<NodeJS.Timeout | null>(null)
 
-  const search = useCallback(async (q: string) => {
-    if (!q.trim()) {
-      setResults([])
-      setSearched(false)
-      return
-    }
+  const handleSearch = useCallback(async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!query.trim()) return
 
     setLoading(true)
     setError(null)
+    setSearched(true)
+
     try {
-      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`)
+      const res = await fetch(`/api/search?q=${encodeURIComponent(query.trim())}`)
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || 'Search failed')
+      }
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Search failed')
       setResults(data.artists)
-      setSearched(true)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Search failed')
+      setError(err instanceof Error ? err.message : 'Something went wrong')
       setResults([])
     } finally {
       setLoading(false)
     }
-  }, [])
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value
-    setQuery(val)
-    if (debounceRef.current) clearTimeout(debounceRef.current)
-    debounceRef.current = setTimeout(() => search(val), 400)
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (debounceRef.current) clearTimeout(debounceRef.current)
-    search(query)
-  }
+  }, [query])
 
   return (
     <main className="min-h-screen flex flex-col">
-      {/* Hero section */}
-      <section className="flex flex-col items-center justify-center flex-1 px-4 pt-24 pb-12">
-        {/* Logo / title */}
-        <div className="mb-3 flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M2 12 L8 3 L14 12" stroke="#08080a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M4.5 8.5 L11.5 8.5" stroke="#08080a" strokeWidth="2" strokeLinecap="round"/>
-            </svg>
+      {/* Hero Section */}
+      <div className="flex-1 flex flex-col items-center justify-center px-4 py-20 relative overflow-hidden">
+        {/* Background gradient orb */}
+        <div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-10 pointer-events-none"
+          style={{
+            background: 'radial-gradient(circle, #a78bfa 0%, #6366f1 50%, transparent 70%)',
+            filter: 'blur(80px)',
+          }}
+        />
+
+        <div className="relative z-10 w-full max-w-2xl flex flex-col items-center gap-8">
+          {/* Title */}
+          <div className="text-center">
+            <h1
+              className="text-6xl font-bold tracking-tight mb-3"
+              style={{
+                background: 'linear-gradient(135deg, #a78bfa 0%, #818cf8 50%, #6366f1 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              Verseatile
+            </h1>
+            <p className="text-text-muted text-lg">
+              Search artists. Browse their discography. Read every lyric.
+            </p>
           </div>
-        </div>
 
-        <h1 className="text-6xl md:text-7xl font-bold tracking-tight text-gradient mb-4 text-center">
-          Verseatile
-        </h1>
-        <p className="text-text-muted text-lg md:text-xl text-center mb-10 max-w-md">
-          Search any artist, explore their full discography, and read every lyric.
-        </p>
-
-        {/* Search form */}
-        <form onSubmit={handleSubmit} className="w-full max-w-xl relative">
-          <div className="relative group">
-            <div className="absolute inset-0 rounded-2xl bg-accent opacity-0 group-focus-within:opacity-10 transition-opacity blur-xl" />
-            <div className="relative flex items-center border border-border rounded-2xl bg-surface overflow-hidden group-focus-within:border-accent group-focus-within:glow-accent-strong transition-all">
-              <div className="pl-5 text-text-muted flex-shrink-0">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="11" cy="11" r="8"/>
-                  <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          {/* Search Form */}
+          <form onSubmit={handleSearch} className="w-full">
+            <div className="relative flex items-center">
+              <div className="absolute left-5 text-text-muted pointer-events-none">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.35-4.35" />
                 </svg>
               </div>
               <input
                 type="text"
                 value={query}
-                onChange={handleChange}
-                placeholder="Search artists..."
-                className="flex-1 bg-transparent px-4 py-4 text-lg text-text-primary placeholder-text-muted outline-none"
-                autoFocus
-                autoComplete="off"
-                spellCheck={false}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search for an artist..."
+                className="w-full pl-14 pr-32 py-4 rounded-full text-lg bg-surface border border-border text-text-primary placeholder-text-muted outline-none transition-all duration-200 focus:border-accent"
+                style={{
+                  boxShadow: query ? '0 0 0 2px rgba(167, 139, 250, 0.2)' : undefined,
+                }}
               />
-              {loading && (
-                <div className="pr-5 text-accent">
-                  <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-                  </svg>
-                </div>
-              )}
-              {!loading && query && (
-                <button
-                  type="button"
-                  onClick={() => { setQuery(''); setResults([]); setSearched(false) }}
-                  className="pr-5 text-text-muted hover:text-text-primary transition-colors"
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
-                  </svg>
-                </button>
-              )}
+              <button
+                type="submit"
+                disabled={loading || !query.trim()}
+                className="absolute right-2 px-6 py-2.5 rounded-full font-medium text-sm transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{
+                  background: 'linear-gradient(135deg, #a78bfa, #6366f1)',
+                  color: 'white',
+                }}
+              >
+                {loading ? 'Searching…' : 'Search'}
+              </button>
             </div>
-          </div>
+          </form>
 
-          {/* Keyboard hint */}
-          <p className="text-center text-text-muted text-xs mt-3">
-            Press <kbd className="px-1.5 py-0.5 rounded border border-border bg-surface text-text-muted text-xs">Enter</kbd> to search
-          </p>
-        </form>
-      </section>
-
-      {/* Results */}
-      {(results.length > 0 || (searched && !loading)) && (
-        <section className="px-4 pb-16 max-w-xl mx-auto w-full">
-          {error ? (
-            <div className="rounded-xl border border-red-900/50 bg-red-950/20 p-4 text-red-400 text-sm">
+          {/* Error */}
+          {error && (
+            <div className="w-full px-4 py-3 rounded-xl border border-red-900/50 bg-red-950/30 text-red-400 text-sm">
               {error}
             </div>
-          ) : results.length === 0 ? (
-            <div className="text-center text-text-muted py-8">
-              <p className="text-lg">No artists found</p>
-              <p className="text-sm mt-1">Try a different search term</p>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              <p className="text-text-muted text-sm mb-4">
-                Found {results.length} artist{results.length !== 1 ? 's' : ''}
-              </p>
-              {results.map((artist) => (
-                <ArtistCard key={artist.id} artist={artist} />
+          )}
+        </div>
+      </div>
+
+      {/* Results Section */}
+      {(searched || results.length > 0) && (
+        <div className="w-full max-w-5xl mx-auto px-4 pb-16">
+          {loading ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="rounded-2xl overflow-hidden bg-surface border border-border animate-pulse"
+                  style={{ aspectRatio: '3/4' }}
+                />
               ))}
             </div>
+          ) : results.length === 0 && searched ? (
+            <div className="text-center text-text-muted py-12">
+              <p className="text-lg">No artists found for &ldquo;{query}&rdquo;</p>
+              <p className="text-sm mt-2">Try a different search term</p>
+            </div>
+          ) : (
+            <>
+              <p className="text-text-muted text-sm mb-4">{results.length} artists found</p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                {results.map((artist) => (
+                  <Link
+                    key={artist.id}
+                    href={`/artist/${artist.id}`}
+                    className="group rounded-2xl overflow-hidden bg-surface border border-border hover:border-accent transition-all duration-200 hover:shadow-lg"
+                    style={{
+                      boxShadow: undefined,
+                    }}
+                  >
+                    <div className="relative" style={{ aspectRatio: '1/1' }}>
+                      {artist.image_url ? (
+                        <Image
+                          src={artist.image_url}
+                          alt={artist.name}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-surface flex items-center justify-center">
+                          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#71717a" strokeWidth="1.5">
+                            <circle cx="12" cy="8" r="4" />
+                            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-3">
+                      <p className="font-medium text-sm text-text-primary truncate group-hover:text-accent transition-colors duration-200">
+                        {artist.name}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </>
           )}
-        </section>
+        </div>
       )}
 
       {/* Footer */}
       <footer className="text-center text-text-muted text-xs py-6 border-t border-border">
-        Powered by the Genius API
+        Powered by Genius API · Verseatile
       </footer>
     </main>
   )

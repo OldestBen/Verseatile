@@ -7,7 +7,6 @@
   --surface: #111113;
   --border: #27272a;
   --accent: #a78bfa;
-  --accent-dim: #7c3aed;
   --text-primary: #fafafa;
   --text-muted: #71717a;
 }
@@ -16,38 +15,32 @@
   box-sizing: border-box;
 }
 
-html,
 body {
   background-color: var(--background);
   color: var(--text-primary);
-  min-height: 100vh;
-  scroll-behavior: smooth;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
 
-/* Custom scrollbar */
+::selection {
+  background-color: rgba(167, 139, 250, 0.3);
+  color: #fafafa;
+}
+
 ::-webkit-scrollbar {
   width: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: var(--background);
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--border);
   border-radius: 3px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-muted);
-}
-
-/* Selection highlight */
-::selection {
-  background-color: rgba(167, 139, 250, 0.3);
-  color: var(--text-primary);
-}
-
-/* Smooth image loading */
-img {
-  transition: opacity 0.3s ease;
 }
 
 @layer utilities {
@@ -58,16 +51,8 @@ img {
     background-clip: text;
   }
 
-  .glow-accent {
-    box-shadow: 0 0 20px rgba(167, 139, 250, 0.15), 0 0 40px rgba(167, 139, 250, 0.05);
-  }
-
-  .glow-accent-strong {
-    box-shadow: 0 0 0 1px rgba(167, 139, 250, 0.5), 0 0 20px rgba(167, 139, 250, 0.2);
-  }
-
   .card-hover {
-    transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
   }
 
   .card-hover:hover {
