@@ -247,6 +247,27 @@ export default function ArtistPage() {
           </button>
         </div>
 
+        <div className="flex items-center gap-2">
+          <Link
+            href={`/visualize/${id}`}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-medium transition-all"
+            style={{
+              borderColor: 'rgba(167,139,250,0.4)',
+              color: '#a78bfa',
+              background: 'rgba(167,139,250,0.07)',
+              boxShadow: '0 0 12px rgba(167,139,250,0.12)',
+            }}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+              <circle cx="5" cy="12" r="2.5"/>
+              <circle cx="19" cy="5" r="2.5"/>
+              <circle cx="19" cy="19" r="2.5"/>
+              <line x1="7.5" y1="11" x2="16.5" y2="6.5"/>
+              <line x1="7.5" y1="13" x2="16.5" y2="17.5"/>
+            </svg>
+            Visualize
+          </Link>
+
         <button
           onClick={downloadAllLyrics}
           disabled={downloading || songsLoading || songs.length === 0}
