@@ -292,6 +292,7 @@ export default function ArtistPage() {
             </>
           )}
         </button>
+        </div>
       </div>
 
       {/* Song list */}
